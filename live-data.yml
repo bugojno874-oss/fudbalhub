@@ -1,0 +1,63 @@
+name: FudbalHub Live Data
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Football data
+        env: { KEY: '${{ secrets.FOOTBALL_API_KEY }}' }
+        run: |
+          set -e; mkdir -p data; B='https://v3.football.api-sports.io'; H="x-apisports-key: $KEY"; D=$(date -u +%Y-%m-%d)
+          curl -fsS -H "$H" "$B/fixtures?live=all" > /tmp/live.json
+          curl -fsS -H "$H" "$B/fixtures?date=$D" > /tmp/today.json
+          python3 - <<'PY'
+          import json,datetime
+          a=json.load(open('/tmp/live.json')).get('response',[])+json.load(open('/tmp/today.json')).get('response',[]);o=[];seen=set()
+          for x in a:
+            i=x.get('fixture',{}).get('id')
+            if i and i not in seen:seen.add(i);o.append(x)
+          json.dump({'updated':datetime.datetime.now(datetime.timezone.utc).isoformat(),'response':o},open('data/fixtures.json','w'),ensure_ascii=False,separators=(',',':'))
+          PY
+      - name: Standings and teams
+        env: { KEY: '${{ secrets.FOOTBALL_API_KEY }}' }
+        run: |
+          python3 - <<'PY'
+          import urllib.request,json,os,datetime,time
+          H={'x-apisports-key':os.environ['KEY']}; base='https://v3.football.api-sports.io'; leagues=[(315,2025),(39,2025),(140,2025),(135,2025),(78,2025),(61,2025)]
+          S=[];T=[];seen=set()
+          for lid,season in leagues:
+            for ep in ('standings','teams'):
+              try:
+                r=urllib.request.urlopen(urllib.request.Request(f'{base}/{ep}?league={lid}&season={season}',headers=H),timeout=25);d=json.load(r)
+                if ep=='standings':S+=d.get('response',[])
+                else:
+                  for x in d.get('response',[]):
+                    i=x.get('team',{}).get('id')
+                    if i and i not in seen:seen.add(i);T.append(x)
+              except Exception as e: print(ep,lid,e)
+              time.sleep(.15)
+          now=datetime.datetime.now(datetime.timezone.utc).isoformat();json.dump({'updated':now,'response':S},open('data/standings.json','w'),ensure_ascii=False,separators=(',',':'));json.dump({'updated':now,'response':T},open('data/teams.json','w'),ensure_ascii=False,separators=(',',':'))
+          PY
+      - name: Football news RSS
+        run: |
+          python3 - <<'PY'
+          import urllib.request,xml.etree.ElementTree as ET,json,datetime
+          feeds=[('BBC Sport','https://feeds.bbci.co.uk/sport/football/rss.xml'),('Sky Sports','https://www.skysports.com/rss/12040')];out=[]
+          for src,u in feeds:
+            try:
+              root=ET.fromstring(urllib.request.urlopen(u,timeout=20).read())
+              for i in root.findall('.//item')[:15]:
+                title=(i.findtext('title') or '').strip();desc=(i.findtext('description') or '').strip();date=(i.findtext('pubDate') or '').strip()
+                if title:out.append({'source':src,'title':title,'description':desc,'date':date})
+            except Exception as e:print(src,e)
+          json.dump({'updated':datetime.datetime.now(datetime.timezone.utc).isoformat(),'items':out[:30]},open('data/news.json','w'),ensure_ascii=False,separators=(',',':'))
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'; git add data/; git diff --cached --quiet && exit 0; git commit -m 'Update live football data'; git push
