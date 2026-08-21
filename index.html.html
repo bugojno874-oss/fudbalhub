@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FudbalHub — Fudbal na jednom mjestu</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--ink:#101828;--muted:#667085;--green:#0b7a3b;--dark:#071d13;--line:#e5e7eb;--red:#e31b23}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+a{text-decoration:none;color:inherit}.top{background:#04130c;color:#b8c8c0;font-size:13px}.wrap{max-width:1200px;margin:auto;padding:0 20px}.top .wrap{height:34px;display:flex;align-items:center;justify-content:space-between}
+header{background:var(--dark);color:#fff;position:sticky;top:0;z-index:20;box-shadow:0 3px 15px #0002}.nav{height:72px;display:flex;align-items:center;gap:28px}.logo{font-size:25px;font-weight:900;white-space:nowrap}.logo b{color:#39d353}.navlinks{display:flex;gap:20px;font-weight:700;font-size:14px}.navlinks a:hover{color:#39d353}.search{margin-left:auto;background:#fff1;border:1px solid #ffffff25;color:white;border-radius:9px;padding:10px 13px;width:180px}
+.hero{background:linear-gradient(115deg,#061b11 0%,#0c6334 55%,#103b80 100%);color:white}.hero .wrap{padding-top:52px;padding-bottom:52px;display:grid;grid-template-columns:1.4fr .8fr;gap:30px}.eyebrow{color:#7df59b;font-weight:900;text-transform:uppercase;font-size:12px;letter-spacing:1px}.hero h1{font-size:54px;line-height:1.02;margin:12px 0}.hero p{font-size:18px;color:#d9e9df;max-width:680px;line-height:1.55}.heroCard{background:#ffffff12;border:1px solid #ffffff20;border-radius:18px;padding:24px;align-self:center}.heroCard small{color:#bfe6cb}.heroCard h2{margin:8px 0 18px}.teams{display:flex;align-items:center;justify-content:space-between;text-align:center}.crest{font-size:42px}.vs{font-weight:900;color:#a7c4b4}.btn{display:inline-block;background:#39d353;color:#062013;font-weight:900;padding:12px 18px;border-radius:9px;margin-top:12px}
+main{padding:34px 0}.section{margin-bottom:38px}.title{display:flex;justify-content:space-between;align-items:end;margin-bottom:17px}.title h2{margin:0;font-size:26px}.title a{color:var(--green);font-weight:800;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 15px #10182808}.photo{height:175px;background:linear-gradient(135deg,#153e2b,#1d7f4b);display:flex;align-items:center;justify-content:center;font-size:65px}.body{padding:18px}.tag{font-size:11px;font-weight:900;color:var(--green);text-transform:uppercase}.body h3{font-size:19px;margin:7px 0 9px;line-height:1.25}.body p{color:var(--muted);line-height:1.45;margin:0}.layout{display:grid;grid-template-columns:1.55fr .75fr;gap:20px}
+.matches,.tablebox,.transferbox{background:white;border:1px solid var(--line);border-radius:14px;overflow:hidden}.match{display:grid;grid-template-columns:1fr 110px 1fr;align-items:center;padding:17px 20px;border-bottom:1px solid var(--line)}.match:last-child{border:0}.club{font-weight:800}.right{text-align:right}.score{text-align:center;font-weight:900}.score span{display:block;color:var(--muted);font-size:11px;font-weight:600;margin-bottom:4px}.league{padding:12px 20px;background:#f8faf9;font-size:12px;font-weight:900;color:var(--green);text-transform:uppercase}
+table{width:100%;border-collapse:collapse}th,td{padding:11px 14px;border-bottom:1px solid var(--line);font-size:13px;text-align:center}th{font-size:11px;color:var(--muted)}td:first-child,th:first-child{text-align:left}.pos{width:30px;color:var(--muted)}.form{font-size:10px;font-weight:900}.w{color:#16833b}.d{color:#d28a00}.l{color:#d92d20}
+.trans{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}.trans:last-child{border:0}.avatar{width:42px;height:42px;border-radius:50%;background:#e8f5ec;display:grid;place-items:center;font-size:21px}.trans strong{display:block}.trans small{color:var(--muted)}
+.leagues{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.leagueCard{background:white;border:1px solid var(--line);padding:20px 15px;border-radius:12px;text-align:center;font-weight:900}.leagueCard span{display:block;font-size:30px;margin-bottom:9px}
+footer{background:#071d13;color:#c6d3cc;margin-top:25px}.foot{display:grid;grid-template-columns:2fr 1fr 1fr;padding:38px 20px;gap:25px}.foot h3{color:white}.foot p{line-height:1.5}.copy{border-top:1px solid #ffffff18;padding:16px 20px;text-align:center;font-size:12px}
+@media(max-width:850px){.hero .wrap,.layout,.foot{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.leagues{grid-template-columns:repeat(2,1fr)}.navlinks{display:none}.search{width:140px}.hero h1{font-size:42px}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><span>⚡ Fudbal vijesti 24/7</span><span>Petak, 21. august 2026.</span></div></div>
+<header><div class="wrap nav">
+<a class="logo" href="#">Fudbal<b>Hub</b> ⚽</a>
+<nav class="navlinks"><a href="#vijesti">VIJESTI</a><a href="#rezultati">REZULTATI</a><a href="#tabele">TABELE</a><a href="#lige">LIGE</a><a href="#transferi">TRANSFERI</a></nav>
+<input class="search" placeholder="🔎 Pretraži..." oninput="searchNews(this.value)">
+</div></header>
+
+<section class="hero"><div class="wrap">
+<div><div class="eyebrow">Fudbal • Vijesti • Rezultati • Transferi</div><h1>Sve što trebaš znati o fudbalu.</h1><p>Dobrodošao na FudbalHub — moderan fudbalski portal sa vijestima, rezultatima, tabelama, transferima i najvažnijim evropskim ligama.</p><a class="btn" href="#vijesti">Najnovije vijesti →</a></div>
+<div class="heroCard"><small>NAJAVLJENA UTAKMICA</small><h2>Veliki fudbalski okršaj</h2><div class="teams"><div><div class="crest">🔵</div><b>City</b></div><div class="vs">VS</div><div><div class="crest">🔴</div><b>United</b></div></div><p style="font-size:13px;margin:17px 0 0">Subota • 20:45</p></div>
+</div></section>
+
+<main class="wrap">
+<section class="section" id="vijesti"><div class="title"><h2>🔥 Najnovije vijesti</h2><a href="#">Sve vijesti →</a></div>
+<div class="grid" id="newsGrid">
+<article class="card news"><div class="photo">🏆</div><div class="body"><div class="tag">Liga prvaka</div><h3>Veliki evropski klubovi spremni za novu sezonu</h3><p>Najveće ekipe pripremaju se za borbu za najvažniji evropski trofej.</p></div></article>
+<article class="card news"><div class="photo">🔄</div><div class="body"><div class="tag">Transferi</div><h3>Transfer tržište ponovo u centru pažnje</h3><p>Klubovi završavaju posljednja pojačanja prije početka takmičenja.</p></div></article>
+<article class="card news"><div class="photo">🇧🇦</div><div class="body"><div class="tag">BiH</div><h3>Premijer liga BiH donosi nove derbije</h3><p>Velika borba za vrh tabele očekuje se tokom cijele sezone.</p></div></article>
+</div></section>
+
+<section class="section" id="rezultati"><div class="title"><h2>⚽ Rezultati i utakmice</h2><a href="#">Svi rezultati →</a></div><div class="layout">
+<div class="matches"><div class="league">Premijer liga BiH</div>
+<div class="match"><div class="club">Sarajevo</div><div class="score"><span>ZAVRŠENO</span>2 : 1</div><div class="club right">Željezničar</div></div>
+<div class="match"><div class="club">Zrinjski</div><div class="score"><span>ZAVRŠENO</span>1 : 0</div><div class="club right">Borac</div></div>
+<div class="league">Engleska • Premier League</div>
+<div class="match"><div class="club">Liverpool</div><div class="score"><span>20:45</span>— : —</div><div class="club right">Arsenal</div></div>
+<div class="match"><div class="club">Chelsea</div><div class="score"><span>21:00</span>— : —</div><div class="club right">Tottenham</div></div>
+</div>
+<div class="tablebox" id="tabele"><div class="league">Tabela • Premijer liga BiH</div><table><thead><tr><th># Klub</th><th>U</th><th>B</th></tr></thead><tbody>
+<tr><td>1. Zrinjski</td><td>5</td><td><b>13</b></td></tr><tr><td>2. Borac</td><td>5</td><td><b>11</b></td></tr><tr><td>3. Sarajevo</td><td>5</td><td><b>10</b></td></tr><tr><td>4. Željezničar</td><td>5</td><td><b>8</b></td></tr><tr><td>5. Velež</td><td>5</td><td><b>7</b></td></tr>
+</tbody></table></div>
+</div></section>
+
+<section class="section" id="transferi"><div class="title"><h2>🔄 Transferi</h2><a href="#">Svi transferi →</a></div><div class="layout">
+<div class="transferbox"><div class="trans"><div class="avatar">⚽</div><div><strong>Napadač → Barcelona</strong><small>Veliko pojačanje u napadu</small></div></div>
+<div class="trans"><div class="avatar">⭐</div><div><strong>Veznjak → Manchester City</strong><small>Ugovor potpisan</small></div></div>
+<div class="trans"><div class="avatar">🔥</div><div><strong>Krilo → Bayern München</strong><small>Dogovor postignut</small></div></div></div>
+<div class="tablebox"><div class="league">Forma</div><div style="padding:20px"><b>Najviše pažnje danas</b><p style="color:#667085;line-height:1.5">Transferi, derbiji i borba za vrh tabela.</p></div></div>
+</div></section>
+
+<section class="section" id="lige"><div class="title"><h2>🌍 Popularne lige</h2></div><div class="leagues">
+<div class="leagueCard"><span>🇧🇦</span>Premijer liga BiH</div><div class="leagueCard"><span>🏴</span>Premier League</div><div class="leagueCard"><span>🇪🇸</span>La Liga</div><div class="leagueCard"><span>🇮🇹</span>Serie A</div><div class="leagueCard"><span>🇩🇪</span>Bundesliga</div>
+</div></section>
+</main>
+
+<footer id="kontakt"><div class="wrap foot"><div><h3>FudbalHub ⚽</h3><p>Fudbalski portal za ljubitelje najvažnije sporedne stvari na svijetu.</p></div><div><h3>Portal</h3><p>Vijesti<br>Rezultati<br>Tabele<br>Transferi</p></div><div><h3>Prati nas</h3><p>Facebook • Instagram<br>YouTube • TikTok</p></div></div><div class="copy">© 2026 FudbalHub. Demo verzija portala.</div></footer>
+<script>
+function searchNews(q){
+ q=q.toLowerCase().trim();
+ document.querySelectorAll('.news').forEach(c=>{
+   c.style.display=c.innerText.toLowerCase().includes(q)?'block':'none';
+ });
+}
+</script>
+</body></html>
