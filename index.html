@@ -71,13 +71,175 @@ footer{background:var(--dark);color:#b8c8c0}.foot{display:grid;grid-template-col
 <footer><div class="container foot"><div><h3>FudbalHub</h3><p>Moderan fudbalski portal za domaći i evropski fudbal.</p></div><div><h3>Portal</h3><a href="#vijesti">Vijesti</a><a href="#rezultati">Rezultati</a><a href="#tabele">Tabele</a></div><div><h3>Takmičenja</h3><a href="#lige">Premijer liga BiH</a><a href="#lige">Premier League</a><a href="#lige">Liga prvaka</a></div><div><h3>Kontakt</h3><a href="mailto:info@fudbalhub.ba">info@fudbalhub.ba</a><a href="#">Instagram</a><a href="#">Facebook</a></div></div><div class="copy">© 2026 FudbalHub • Profesionalna frontend verzija • Demo podaci</div></footer>
 
 <div class="modal" id="modal"><div class="modalbox"><button class="close" id="close">✕</button><div class="tag">FudbalHub članak</div><h2 id="mtitle"></h2><p id="mtext"></p><p><b>Sljedeća faza:</b> povezivanje sa stvarnim sportskim API-jem, bazom vijesti, admin panelom i pravim fotografijama/grbovima.</p></div></div>
-
 <script>
-const search=document.getElementById('search');
-search.oninput=()=>{let q=search.value.toLowerCase().trim();document.querySelectorAll('.searchitem').forEach(x=>x.classList.toggle('hide',q&&!x.dataset.search.includes(q)&&!x.innerText.toLowerCase().includes(q)))};
-document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));b.classList.add('on');let f=b.dataset.f;document.querySelectorAll('.game').forEach(x=>x.classList.toggle('hide',f!='all'&&x.dataset.l!=f))});
-const modal=document.getElementById('modal');document.querySelectorAll('.card').forEach(c=>c.onclick=()=>{document.getElementById('mtitle').textContent=c.querySelector('h3').textContent;document.getElementById('mtext').textContent=c.querySelector('p').textContent+' Ovo je prošireni prikaz članka u profesionalnoj demo verziji portala.';modal.classList.add('open')});document.getElementById('close').onclick=()=>modal.classList.remove('open');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('open')};
-document.getElementById('theme').onclick=()=>{let d=document.body.dataset.dark==='1';document.body.dataset.dark=d?'0':'1';document.documentElement.style.setProperty('--bg',d?'#f4f6f5':'#06100b');document.documentElement.style.setProperty('--card',d?'#fff':'#0c1c14');document.documentElement.style.setProperty('--soft',d?'#eef2ef':'#12261b');document.documentElement.style.setProperty('--ink',d?'#101714':'#f1f5f3');document.documentElement.style.setProperty('--muted',d?'#6b7771':'#9aaba2');document.documentElement.style.setProperty('--line',d?'#dfe5e1':'#20372b');document.getElementById('theme').textContent=d?'☾':'☀'};
-document.getElementById('mob').onclick=()=>{let m=document.querySelector('.menu');m.style.display=m.style.display==='flex'?'none':'flex';m.style.flexDirection='column';m.style.position='absolute';m.style.top='65px';m.style.left='0';m.style.right='0';m.style.background='#071b12';m.style.padding='18px'};
+const search = document.getElementById('search');
+
+async function ucitajPodatke() {
+  try {
+    const res = await fetch('./data/fixtures.json');
+    const data = await res.json();
+
+    const utakmice = data.response || [];
+
+    const container = document.querySelector('.panel');
+
+    if (!container) return;
+
+    const filteri = document.querySelectorAll('.filter');
+
+    function prikazi(filter = 'all') {
+      const stare = container.querySelectorAll('.dynamic-match');
+      stare.forEach(x => x.remove());
+
+      const lista = utakmice.filter(f => {
+        if (filter === 'all') return true;
+
+        const zemlja = (f.league?.country || '').toLowerCase();
+        const naziv = (f.league?.name || '').toLowerCase();
+
+        return (
+          zemlja.includes(filter.toLowerCase()) ||
+          naziv.includes(filter.toLowerCase())
+        );
+      });
+
+      lista.slice(0, 20).forEach(f => {
+        const home = f.teams?.home?.name || 'Domaćin';
+        const away = f.teams?.away?.name || 'Gost';
+
+        const homeGoals =
+          f.goals?.home !== null && f.goals?.home !== undefined
+            ? f.goals.home
+            : '-';
+
+        const awayGoals =
+          f.goals?.away !== null && f.goals?.away !== undefined
+            ? f.goals.away
+            : '-';
+
+        const datum = f.fixture?.date
+          ? new Date(f.fixture.date).toLocaleString('bs-BA', {
+              day: '2-digit',
+              month: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit'
+            })
+          : '';
+
+        const status = f.fixture?.status?.short || '';
+
+        const div = document.createElement('div');
+        div.className = 'match game dynamic-match';
+
+        div.innerHTML = `
+          <div class="league">
+            ${f.league?.name || ''}
+          </div>
+
+          <div class="club">
+            <span class="mini">
+              ${(home.substring(0, 3)).toUpperCase()}
+            </span>
+            ${home}
+          </div>
+
+          <div class="score">
+            <span class="status">${status}</span>
+            ${homeGoals} : ${awayGoals}
+            <small>${datum}</small>
+          </div>
+
+          <div class="club right">
+            ${away}
+            <span class="mini">
+              ${(away.substring(0, 3)).toUpperCase()}
+            </span>
+          </div>
+        `;
+
+        container.appendChild(div);
+      });
+    }
+
+    prikazi();
+
+    filteri.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filteri.forEach(x => x.classList.remove('on'));
+        btn.classList.add('on');
+
+        const tekst = btn.textContent.trim();
+
+        if (tekst === 'Sve') {
+          prikazi('all');
+        } else if (tekst === 'BiH') {
+          prikazi('bosnia');
+        } else if (tekst === 'ENG') {
+          prikazi('england');
+        } else if (tekst === 'ESP') {
+          prikazi('spain');
+        } else {
+          prikazi('all');
+        }
+      });
+    });
+
+  } catch (error) {
+    console.error('Greška pri učitavanju podataka:', error);
+  }
+}
+
+
+/* PRETRAGA */
+if (search) {
+  search.addEventListener('input', () => {
+    const q = search.value.toLowerCase().trim();
+
+    document.querySelectorAll('.searchitem').forEach(x => {
+      const tekst = x.innerText.toLowerCase();
+      x.classList.toggle('hide', q && !tekst.includes(q));
+    });
+  });
+}
+
+
+/* TAMNA / SVJETLA TEMA */
+const theme = document.getElementById('theme');
+
+if (theme) {
+  theme.onclick = () => {
+    document.body.classList.toggle('dark');
+  };
+}
+
+
+/* MOBILNI MENI */
+const mob = document.getElementById('mob');
+
+if (mob) {
+  mob.onclick = () => {
+    const menu = document.querySelector('.menu');
+
+    if (menu) {
+      menu.style.display =
+        menu.style.display === 'flex' ? 'none' : 'flex';
+    }
+  };
+}
+
+
+/* MODAL */
+const modal = document.getElementById('modal');
+const close = document.getElementById('close');
+
+if (close && modal) {
+  close.onclick = () => {
+    modal.style.display = 'none';
+  };
+}
+
+
+/* POKRENI */
+ucitajPodatke();
 </script>
 </body></html>
